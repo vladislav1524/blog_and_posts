@@ -1,0 +1,14 @@
+{% extends "blog/base.html" %}
+
+{% block title %}Изменение поста{% endblock %}
+
+{% block content %}
+    <h2>Изменение поста:</h2>
+    <div class="module">
+        <form action="{% url 'post:post_edit' post.id %}" method="post" enctype="multipart/form-data">
+            {{ form.as_p }}
+            {% csrf_token %}
+            <input type="submit" value="измененить" class="btn btn-primary">
+        </form>
+    </div>
+{% endblock %}

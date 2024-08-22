@@ -1,0 +1,19 @@
+{% extends "blog/base.html" %}
+
+{% block title %}Изменение комментария{% endblock %}
+
+{% block content %}
+    <h1>Изменение комментария</h1>
+    <div class="module">
+        <form action="{% url 'post:comment_edit' comment.id %}" method="post">
+            {{ form }}
+            {% csrf_token %}
+            <p><input type="submit" value="Изменить" class="btn btn-outline-info"></p>
+         </form>
+
+         <form action="{{ comment.post.get_absolute_url }}" method="post">
+            {% csrf_token %}
+            <input type="submit" value="Отмена" class="btn btn-primary">
+        </form>
+    </div>
+{% endblock %} 

@@ -1,0 +1,105 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+{% block content %}
+    <div class="container mt-4">
+        <h1>{% if username %}Посты пользователя {{ username }}:{% else %}Посты:{% endif %}</h1>
+        <div class="post_list">
+        {% for post in page_obj %}
+            <div class="post-card mb-4 p-3 border rounded"> <!-- Обернуть каждый пост в div с классами -->
+                <div class="user mb-2">
+                    <a href="{% url 'post:profile_info' post.author.user.username %}">
+                        <img src="{% if post.author.image %}{{ post.author.image.url }}{% else %}{% static 'img/no_avatar.png' %}{% endif %}" alt="Avatar" class="rounded-circle" width="30" height="30">
+                        {{ post.author.user.username }}
+                    </a>
+                </div>
+                <p class="date">
+                    {{ post.publish }} <br>
+                    Теги: 
+                    {% for tag in post.tags.all %}
+                        <span>#{{ tag.name }}{% if not forloop.last %}, {% endif %}</span>
+                    {% empty %}
+                        <h6>(нет тегов к посту)</h6>
+                    {% endfor %}
+                </p>
+                <h2>
+                    <a href="{% url 'post:detail' post.id %}">{{ post.title }}</a>
+                </h2>
+                <div class="post-body mt-3" style="overflow-wrap: break-word;">
+                    {{ post.body|truncatewords_html:18 }}
+                    <a href="{% url 'post:detail' post.id %}">...</a>
+                </div>
+                {% if post.author == request.user %}
+                    <div class="d-inline mt-2">
+                        <form action="{% url 'post:post_edit' post.id %}" method="get" class="d-inline">
+                            {% csrf_token %}
+                            <input type="submit" value="изменить" class="small-button">
+                        </form>
+                    
+                        <form action="{% url 'post:post_delete' post.id %}" method="get" class="d-inline">
+                            {% csrf_token %}
+                            <input type="submit" value="удалить" class="small-button">
+                        </form>
+                    </div>
+                {% endif %}
+            </div>      
+        {% empty %}
+            <h6>(Ни одного поста пока не опубликовано)</h6>
+        {% endfor %}
+        </div>
+        {% if page_obj %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="{% querystring page=page_obj.previous_page_number %}" aria-label="Previous">
+                        <span aria-hidden="true">🢀</span>
+                    </a>
+                </li>
+            {% endif %}
+
+            {% if page_obj.number > 3 %}
+                <li class="page-item">
+                    <a class="page-link" href="{% querystring page=1 %}">1</a>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link">...</span>
+                </li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+                {% if num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    {% if num == page_obj.number %}
+                        <li class="page-item active" aria-current="page">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                    {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="{% querystring page=num %}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.number < page_obj.paginator.num_pages|add:'-3' %}
+                <li class="page-item disabled">
+                    <span class="page-link">...</span>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="{% querystring page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
+                </li>
+            {% endif %}
+
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="{% querystring page=page_obj.next_page_number %}" aria-label="Next">
+                        <span aria-hidden="true">🢂</span>
+                    </a>
+                </li>
+            {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+
+
+    </div>
+{% endblock %}

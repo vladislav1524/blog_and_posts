@@ -1,0 +1,53 @@
+{% extends "blog/base.html" %}
+
+{% block title %}Вход{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Вход</h1>
+        <div class="card">
+            <div class="card-body">
+                {% if form.errors %}
+                    <div class="alert alert-danger" role="alert">
+                        Ваш логин и пароль не совпали. Попробуйте ещё раз.
+                    </div>
+                {% else %}
+                    <p class="card-text">Введите данные в форму, чтобы войти в свою учётную запись.</p>
+                {% endif %}
+                <form action="{% url 'login' %}" method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">Логин или email:</label>
+                        {{ form.username_or_email }}
+                        {% if form.username_or_email.errors %}
+                            <div class="text-danger">{{ form.username_or_email.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_password" class="form-label">Пароль:</label>
+                        {{ form.password }}
+                        {% if form.password.errors %}
+                            <div class="text-danger">{{ form.password.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Войти</button>
+                    <input type="hidden" name="next" value="{{ next }}"/>
+                </form> <br>
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <a class="btn btn-primary btn-block" href="{% url 'social:begin' 'vkontakte-oauth2' %}">
+                            Войти с VK
+                        </a>
+                    </li>
+                    <li>
+                        <a class="btn btn-danger btn-block" href="{% url 'social:begin' 'google-oauth2' %}">
+                            Войти с Google
+                        </a>
+                    </li>
+                </ul>
+                <p class="mt-3"><a href="{% url 'password_reset' %}">Забыли пароль?</a></p>
+                <p><a href="{% url 'register' %}">Ещё не зарегистрированы?</a></p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

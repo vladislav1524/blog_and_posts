@@ -1,0 +1,14 @@
+{% extends 'blog/base.html' %}
+
+{% block title %}Комментарий{% endblock %}
+
+{% block content %}
+    <h1>Комментарий:</h1>
+    <div class="comment_form">
+        <form action="{% url 'post:comment_form' post.id %}" method="post">
+            {% csrf_token %}
+            {{ form }}
+            <input type="submit" value="опубликовать" class="btn btn-outline-info">
+        </form>
+    </div>
+{% endblock %}

@@ -1,0 +1,163 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+{% load embed_video_tags %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block content %}
+    <h2>{{ post.title }}</h2>
+    <div class="post-card mb-4 p-4 border rounded">
+        <div class="user">
+            <a href="{% url 'post:profile_info' post.author.user.username %}">
+                <img src="{% if post.author.image %}{{ post.author.image.url }}{% else %}{% static 'img/no_avatar.png' %}{% endif %}" alt="Avatar" class="rounded-circle" width="30" height="30">
+                {{ post.author.user.username }}
+            </a>
+        </div>
+        <p class="date">
+            {{ post.publish }} <br>
+            Теги: 
+            {% for tag in post.tags.all %}
+                <span>#{{ tag.name }}{% if not forloop.last %}, {% endif %}</span>
+            {% empty %}
+                <h6>(нет тегов к посту)</h6>
+            {% endfor %}
+        </p>
+        {% if post.author.user == request.user %}
+        <div class="d-inline mt-2">
+            <form action="{% url 'post:post_edit' post.id %}" method="get" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="small-button edit-button" title="Изменить">
+                    <i class="fas fa-edit"></i>
+                </button>
+            </form>
+        
+            <form action="{% url 'post:post_delete' post.id %}" method="get" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="small-button delete-button" title="Удалить">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </form>
+        </div>
+        {% endif %}
+        <script>
+            function toggleLike(postId) {
+                fetch(`/like/${postId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const likeCountElement = document.getElementById(`like-count-${postId}`);
+                    const likeButton = document.getElementById(`like-button-${postId}`);
+                    likeCountElement.textContent = data.like_count;
+
+                    if (data.message === 'Liked') {
+                        likeButton.classList.remove('btn-outline-primary');
+                        likeButton.classList.add('btn-primary');
+                    } else {
+                        likeButton.classList.remove('btn-primary');
+                        likeButton.classList.add('btn-outline-primary');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        </script>
+        
+        <div class="post-content">
+            <div class="mb-3">
+                <div class="d-flex align-items-center">
+                    <span>Лайки:</span>
+                    <span id="like-count-{{ post.id }}" class="badge bg-primary ms-2">{{ post.total_likes }}</span>
+                </div>
+                <button id="like-button-{{ post.id }}" class="btn {% if user_liked %}btn-primary{% else %}btn-outline-primary{% endif %} mt-2" onclick="toggleLike({{ post.id }})" aria-label="Лайк">
+                    <i class="fas fa-thumbs-up"></i>
+                </button>
+            </div>
+            {% if post.image %}
+                <div class="image-detail mt-3">
+                    <img src="{{ post.image.url }}" class="img-fluid rounded" alt="Post Image">
+                </div>
+            {% endif %}
+        
+            {% if post.video %}
+                <div class="d-flex justify-content-center mt-3">
+                    <div class="embed-responsive embed-responsive-16by9">
+                        {% video post.video "tiny" class="embed-responsive-item video" %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    
+
+        <div class="post-body mt-3" style="overflow-wrap: break-word;">
+            {{ post.body|linebreaksbr }}
+        </div>
+        
+    </div>
+
+    {% if similar_posts %}
+        <div class="similar_posts">
+            <h4>Похожие посты:</h4>
+            {% for s_post in similar_posts %}
+                <p>
+                    <div class="user"><a href="{% url 'post:profile_info' s_post.author.user.username %}">
+                        <img src="{% if s_post.author.image %}{{ s_post.author.image.url }}{% else %}{% static 'img/no_avatar.png' %}{% endif %}" alt="Avatar">
+                        {{ s_post.author.user.username }}</a></div>:
+                    <a href="{% url 'post:detail' s_post.id %}">
+                        {{ s_post.title }}
+                    </a>
+                </p>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <h5>Комментарии:</h5>
+    <form action="{% url 'post:comment_form' post.id %}" method="get">
+        {% csrf_token %}
+        <input type="submit" value="написать комментарий" class="btn btn-primary">
+    </form>
+    
+    <div class="comments-section mt-4">
+        {% for comment in comments %}
+            <div class="comment-card mb-3 p-3 border rounded">
+                <div class="user">
+                    <a href="{% url 'post:profile_info' comment.author.user.username %}">
+                        <img src="{% if comment.author.image %}{{ comment.author.image.url }}{% else %}{% static 'img/no_avatar.png' %}{% endif %}">
+                        {{ comment.author.user.username }}
+                    </a>
+                </div>
+                <p class="date">
+                    {{ comment.created }}
+                </p>
+                {% if comment.author.user == request.user %}   
+                    <div class="d-inline">
+                        <form action="{% url 'post:comment_edit' comment.id %}" method="get" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="small-button edit-button" title="Изменить">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </form>
+                    
+                        <form action="{% url 'post:comment_delete' comment.id %}" method="get" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="small-button delete-button" title="Удалить">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                {% endif %}
+                {% if comment.was_edited %}
+                    (изменено)
+                {% endif %}
+                <div class="comment_body">
+                    {{ comment.body|linebreaksbr }}
+                </div>
+            </div>
+        {% empty %}
+            <br>
+            <p>(Комментариев к посту пока нет)</p>
+        {% endfor %}
+    </div> 
+{% endblock %}

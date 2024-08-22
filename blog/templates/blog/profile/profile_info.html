@@ -1,0 +1,64 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+{% block title %}Профиль{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="profile">
+        <h3 class="text-center">
+            {% if profile.user == request.user %}
+                Ваш профиль:
+            {% else %}
+                Профиль пользователя {{ profile.user.username }}:
+            {% endif %}
+        </h3>
+        <div class="text-center mb-4">
+            <h1>{{ request.user.username }}</h1>
+            
+            <img src="{% if profile.image %}{{ profile.image.url }}{% else %}{% static 'img/no_avatar.png' %}{% endif %}" alt="Avatar" class="rounded-circle" width="200" height="200">
+
+        </div>
+        <div class="info">
+            <ul class="list-group mb-4">
+                <li class="list-group-item">
+                    Имя пользователя: {{ profile.user.username }}
+                </li>
+                <li class="list-group-item">
+                    Дата рождения: {{ profile.date_of_birth }}
+                </li>
+                <li class="list-group-item">
+                    Написал(а) постов: {{ count_posts }} <br>   
+                    {% if count_posts > 0  %}
+                        <a href="{% url 'post:user_posts' profile.user.username %}">Посты пользователя</a>
+                    {% endif %}
+                </li>
+                <li class="list-group-item">
+                    Оставил(а) комментариев: {{ count_comments }}
+                </li>
+                <li class="list-group-item">
+                    Время регистрации аккаунта: {{ profile.user.date_joined }}
+                </li>
+                {% if request.user == profile.user %}
+                    <li class="list-group-item">
+                        Ваш email: {{ profile.user.email }}
+                    </li>
+                    <li class="list-group-item">
+                        <form action="{% url 'post:profile_info' profile.user.username %}" method="post" enctype="multipart/form-data" class="mt-3">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="image" class="form-label">Изменить фото</label>
+                                {{ form.image }}
+                                <div class="form-text">Выберите новое изображение для профиля.</div>
+                            </div>
+                            <div class="form-check">
+                                <label class="form-check-label" for="delete_image">{{ form.delete_image.label }}   {{ form.delete_image }} </label>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Обновить фото</button>
+                        </form>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

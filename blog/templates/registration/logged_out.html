@@ -1,0 +1,11 @@
+{% extends "blog/base.html" %}
+
+{% block title %}Выход{% endblock %}
+
+{% block content %} 
+    <h1>Выход</h1>
+    <div class="module">
+       <p>Вы успешно вышли из своей учётной записи.<br>
+        Вы можете войти в учётную запись заново <a href="{% url 'login' %}">тут</a></p>
+    </div>
+{% endblock %}

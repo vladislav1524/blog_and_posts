@@ -1,0 +1,18 @@
+{% extends "blog/base.html" %}
+
+{% block title %}Удаление комментария{% endblock %}
+
+{% block content %}
+    <h1>Удаление комментария</h1>
+    <p>Вы уверены, что хотите удалить комментарий?</p>
+    <div class="module">
+        <form action="{% url 'post:comment_delete' comment.id %}" method="post">
+            {% csrf_token %}
+            <input type="submit" value="Удалить комментарий" type="button" class="btn btn-danger">
+        </form> <br>
+        <form action="{{ comment.post.get_absolute_url }}" method="post">
+            {% csrf_token %}
+            <input type="submit" value="Отмена" class="btn btn-primary">
+        </form>
+    </div>
+{% endblock %} 

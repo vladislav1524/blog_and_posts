@@ -1,0 +1,57 @@
+{% extends "blog/base.html" %}
+
+{% block title %}Публикация поста{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">Публикация поста:</h2>
+        <div class="card">
+            <div class="card-body">
+                <form action="{% url 'post:post_form' %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
+                        {{ form.title }}  
+                        {% if form.title.errors %}
+                            <div class="text-danger">{{ form.title.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ form.body.id_for_label }}">{{ form.body.label }}</label>
+                        {{ form.body }} 
+                        {% if form.body.errors %}
+                            <div class="text-danger">{{ form.body.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ form.tags.id_for_label }}">{{ form.tags.label }}</label>
+                        {{ form.tags }}
+                        <small class="form-text text-muted">(Список тегов через запятую)</small>  
+                        {% if form.tags.errors %}
+                            <div class="text-danger">{{ form.tags.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ form.image.id_for_label }}">{{ form.image.label }}</label>
+                        {{ form.image }} 
+                        {% if form.image.errors %}
+                            <div class="text-danger">{{ form.image.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ form.video.id_for_label }}">{{ form.video.label }}</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-video"></i></span>
+                            <input type="url" name="{{ form.video.name }}" id="{{ form.video.id_for_label }}" class="form-control" placeholder="Введите ссылку на видео (например, YouTube)" >
+                        </div>
+                        <small class="form-text text-muted">Пример: https://www.youtube.com/watch?v=example</small>
+                        {% if form.video.errors %}
+                            <div class="text-danger">{{ form.video.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <input type="submit" value="Опубликовать" class="btn btn-primary w-100">
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
