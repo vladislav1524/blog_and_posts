@@ -13,9 +13,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['blogandposts.pythonanywhere.com']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -23,8 +23,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'sslserver',
+    'django.contrib.staticfiles', 
     'social_django',
     'taggit',
     'embed_video',
@@ -99,7 +98,7 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = '/home/blogandposts/static'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -108,7 +107,7 @@ LOGIN_REDIRECT_URL = reverse_lazy('post:post_list')
 
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = '/home/blogandposts/media'
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -128,8 +127,9 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-VK_APP_ID = os.getenv('VK_APP_ID')
-VK_API_SECRET = os.getenv('VK_API_SECRET')
+SOCIAL_AUTH_VK_OAUTH2_KEY  = os.getenv('VK_APP_ID')
+SOCIAL_AUTH_VK_OAUTH2_SECRET  = os.getenv('VK_API_SECRET')
+SOCIAL_AUTH_VK_OAUTH2_SCOPE = ['email', 'bdate', 'photos'] 
 
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')  
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')

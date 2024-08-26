@@ -52,7 +52,7 @@
             {% if page_obj.has_previous %}
                 <li class="page-item">
                     <a class="page-link" href="{% querystring page=page_obj.previous_page_number %}" aria-label="Previous">
-                        <span aria-hidden="true">🢀</span>
+                        <span aria-hidden="true">&laquo;</span>
                     </a>
                 </li>
             {% endif %}
@@ -92,7 +92,7 @@
             {% if page_obj.has_next %}
                 <li class="page-item">
                     <a class="page-link" href="{% querystring page=page_obj.next_page_number %}" aria-label="Next">
-                        <span aria-hidden="true">🢂</span>
+                        <span aria-hidden="true">&raquo;</span>
                     </a>
                 </li>
             {% endif %}

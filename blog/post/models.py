@@ -51,8 +51,10 @@ class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
     author = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='comments')
     body = models.TextField(verbose_name='Текст')
+    original_body = models.TextField(verbose_name='Оригинальный текст', blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    was_edited = models.BooleanField(default=False)
 
     class Meta:
         ordering = ['-created']
@@ -63,5 +65,9 @@ class Comment(models.Model):
     def __str__(self):
         return f'Comment by {self.author} on {self.post}'
     
-    def was_edited(self):
-        return self.updated > self.created
+    def save(self, *args, **kwargs):
+        if self.body != self.original_body:
+            self.was_edited = True 
+        super().save(*args, **kwargs)
+
+

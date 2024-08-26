@@ -7,13 +7,8 @@
         <h1 class="text-center mb-4">Вход</h1>
         <div class="card">
             <div class="card-body">
-                {% if form.errors %}
-                    <div class="alert alert-danger" role="alert">
-                        Ваш логин и пароль не совпали. Попробуйте ещё раз.
-                    </div>
-                {% else %}
                     <p class="card-text">Введите данные в форму, чтобы войти в свою учётную запись.</p>
-                {% endif %}
+            
                 <form action="{% url 'login' %}" method="post">
                     {% csrf_token %}
                     <div class="mb-3">
@@ -30,12 +25,15 @@
                             <div class="text-danger">{{ form.password.errors }}</div>
                         {% endif %}
                     </div>
+                    {% if form.non_field_errors %}
+                        <div class="text-danger">{{ form.non_field_errors }}</div>
+                    {% endif %}
                     <button type="submit" class="btn btn-primary w-100">Войти</button>
                     <input type="hidden" name="next" value="{{ next }}"/>
                 </form> <br>
                 <ul class="list-unstyled">
                     <li class="mb-2">
-                        <a class="btn btn-primary btn-block" href="{% url 'social:begin' 'vkontakte-oauth2' %}">
+                        <a class="btn btn-primary btn-block" href="{% url 'social:begin' 'vk-oauth2' %}">
                             Войти с VK
                         </a>
                     </li>

@@ -104,30 +104,37 @@ def comment_add(request, post_id):
         if form.is_valid():
             cd = form.cleaned_data  
             profile = get_object_or_404(UserProfile, user=request.user)  
-            Comment.objects.create(post=post, author=profile, body=cd['body']) 
+            Comment.objects.create(post=post, author=profile, body=cd['body'], original_body=cd['body']) 
             return redirect('post:detail', post_id=post.id)
     else:
         form = CommentForm()
     return render(request, 'blog/comment/comment_form.html', {'form': form,
                                                               'post': post})
 
+
 @login_required
 def comment_edit(request, comment_id):
     comment = get_object_or_404(Comment, id=comment_id)
     profile = get_object_or_404(UserProfile, user=request.user)  
+    
     if profile != comment.author:
         return redirect('post:detail', post_id=comment.post.id)
 
     if request.method == 'POST':
         form = CommentForm(request.POST, instance=comment)
         if form.is_valid():
-            form.save()
+            new_body = form.cleaned_data['body']        
+            comment.body = new_body
+            comment.save() 
             return redirect('post:detail', post_id=comment.post.id)
     else:
-        form = CommentForm(instance=comment) 
-    return render(request, 'blog/comment/comment_edit.html', {'form': form,
-                                                               'post': comment.post,
-                                                               'comment': comment})
+        form = CommentForm(instance=comment)
+
+    return render(request, 'blog/comment/comment_edit.html', {
+        'form': form,
+        'post': comment.post,
+        'comment': comment
+    })
 
 
 @login_required
@@ -203,13 +210,18 @@ def login_view(request):
             user = authenticate(request, username=username_or_email, password=password)
 
             if user is None:
-                try:
-                    user = User.objects.get(email=username_or_email)
-                except User.DoesNotExist:
+                users = User.objects.filter(email=username_or_email)
+
+                if users.exists():
+                    if users.count() > 1:
+                        form.add_error('username_or_email', 'Найдено несколько аккаунтов с этой почтой. Если вы зарегистрированы через VK или Google, войдите через соответствующие кнопки ниже.')
+                        return render(request, 'registration/login.html', {'form': form}) 
+                    user = users.first()  # Берем первого пользователя из списка
+                else:
                     user = None
             
             if user is not None:
-                login(request, user)
+                login(request, user, backend='django.contrib.auth.backends.ModelBackend')
                 return redirect('post:post_list')
             else:
                 form.add_error(None, 'Неверные логин/почта или пароль')

@@ -35,7 +35,7 @@
 
                     <div class="mb-3">
                         <label for="image" class="form-label">Фото профиля:</label>
-                        <input type="file" name="image" id="id_image" class="form-control">
+                        <input type="file" name="image" id="id_image" class="form-control" accept="image/*">
                         {% if form.image.errors %}
                             <div class="text-danger">{{ form.image.errors }}</div>
                         {% endif %}
@@ -55,7 +55,19 @@
                         {% endif %}
                     </div>
                     <input type="submit" class="btn btn-primary w-100" value="Зарегистрироваться">
-                </form>
+                </form> <br>
+                <ul class="list-unstyled">
+                      <li class="mb-3">
+                          <a class="btn btn-primary btn-block" href="{% url 'social:begin' 'vk-oauth2' %}">                                                                                                                                                 
+                              Войти с VK
+                          </a>
+                      </li>
+                      <li>
+                          <a class="btn btn-danger btn-block" href="{% url 'social:begin' 'google-oauth2' %}">
+                              Войти с Google
+                          </a>
+                      </li>
+                  </ul>
             </div>
         </div>
     </div>
