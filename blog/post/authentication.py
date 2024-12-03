@@ -19,10 +19,8 @@ def create_profile(backend, user, response, *args, **kwargs):
 
     # Проверяем, откуда пришел пользователь
     if backend.name == 'vk-oauth2':
-        # Получаем access_token
         access_token = response.get('access_token')
 
-        # Запрос данных пользователя с использованием access_token
         if access_token:
             user_info_response = requests.get(
                 "https://api.vk.com/method/users.get",
@@ -39,7 +37,6 @@ def create_profile(backend, user, response, *args, **kwargs):
             bdate = user_info.get('bdate')
             if bdate:
                 try:
-                    # Предполагаем, что дата приходит в формате "DD.MM.YYYY"
                     date_of_birth = datetime.strptime(bdate, '%d.%m.%Y').date()
                     user_profile.date_of_birth = date_of_birth
                 except ValueError:
@@ -47,12 +44,12 @@ def create_profile(backend, user, response, *args, **kwargs):
                     print("Неверный формат даты рождения:", bdate)
 
             # Получаем фото профиля
-            photo_url = user_info.get('photo_max')  # Или используйте 'photo_200'
+            photo_url = user_info.get('photo_max')  
 
     elif backend.name == 'google-oauth2':
         # Получаем фото профиля от Google
-        photo_url = response.get('picture')  # URL фото профиля от Google
-        # Google не предоставляет дату рождения, поэтому можно оставить поле пустым или использовать другое поле
+        photo_url = response.get('picture')  
+       
 
     if photo_url:
         # Загружаем изображение и сохраняем его в поле image
