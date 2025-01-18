@@ -5,7 +5,7 @@
         <h1>{% if username %}Посты пользователя {{ username }}:{% else %}Посты:{% endif %}</h1>
         <div class="post_list">
         {% for post in page_obj %}
-            <div class="post-card mb-4 p-3 border rounded"> <!-- Обернуть каждый пост в div с классами -->
+            <div class="post-card mb-4 p-3 border rounded">
                 <div class="user mb-2">
                     <a href="{% url 'post:profile_info' post.author.user.username %}">
                         <img src="{% if post.author.image %}{{ post.author.image.url }}{% else %}{% static 'img/no_avatar.png' %}{% endif %}" alt="Avatar" class="rounded-circle" width="30" height="30">
